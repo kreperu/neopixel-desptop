@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.13)
-set(PICO_SDK_PATH /home/kuba/pico/pico-workspace/neopixel-desptop/pico-sdk CACHE PATH "Path to the Raspberry Pi Pico SDK" FORCE)
+set(PICO_SDK_PATH ${CMAKE_CURRENT_LIST_DIR}/../pico-sdk CACHE PATH "Path to the Raspberry Pi Pico SDK" FORCE)
 include(../pico-sdk/external/pico_sdk_import.cmake)
 project(ctrl C CXX ASM)
 set(PICO_BOARD pico_w)
@@ -19,7 +19,7 @@ pico_generate_pio_header(ctrl
 pico_enable_stdio_usb(ctrl 1)
 pico_enable_stdio_uart(ctrl 0)
 pico_add_extra_outputs(ctrl)
-#pico_set_binary_type(ctrl no_flash)
+#pico_set_binary_type(ctrl no_flash) #for extreme overclock
 
 target_link_libraries(ctrl pico_stdlib hardware_gpio hardware_pio hardware_clocks  pico_cyw43_arch_lwip_threadsafe_background)
 

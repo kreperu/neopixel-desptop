@@ -1,7 +1,5 @@
 /.vscode/
 /build/
-/pico-sdk/
 /tools/
 /website/
 /src/build/
-/src/pico-sdk/
