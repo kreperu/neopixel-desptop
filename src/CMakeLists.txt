@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.13)
 set(PICO_SDK_PATH ${CMAKE_CURRENT_LIST_DIR}/../pico-sdk CACHE PATH "Path to the Raspberry Pi Pico SDK" FORCE)
-include(../pico-sdk/external/pico_sdk_import.cmake)
+include( ${CMAKE_CURRENT_LIST_DIR}/../pico-sdk/external/pico_sdk_import.cmake)
 project(ctrl C CXX ASM)
 set(PICO_BOARD pico_w)
 set(CMAKE_C_STANDARD 11)
@@ -13,9 +13,9 @@ add_executable(ctrl
   ws2812b.c
   server.c
 )
-pico_generate_pio_header(ctrl 
-  ../pio/pwm.pio
-)
+#pico_generate_pio_header(ctrl 
+#  ../pio/pwm.pio
+#)
 pico_enable_stdio_usb(ctrl 1)
 pico_enable_stdio_uart(ctrl 0)
 pico_add_extra_outputs(ctrl)
