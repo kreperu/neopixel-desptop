@@ -1,0 +1,51 @@
+.program pwm
+    set pindirs, 1      ; PIO.pin.dir <- OUT
+    set pins, 0;
+.wrap_target
+;    start:
+;        pull            ; -0.05us get RX FIFO into OSR
+;        jmp !OSRE, doPacket ; -0.05us Jump to packet handling if data available
+;        set pins, 0 [31]; If data unavailable go low (reset) ...
+;        set X, 31 [31]  ; ... make a counter ...
+;    doReset:            ; and wait for ~1000 cycles
+;        jmp X--, doReset [31]
+;        jmp start [31]  ; finally go back to start
+;    doPacket:
+;        out Y, 1        ; -0.05us Push a single bit of data into Y
+;        jmp !Y, doZero  ; -0.05us If Y == 0 : jump to doZero
+;    doOne:              ; Else : go to doOne
+;        set pins, 1 [15]; Send a one signal
+;        set pins, 0 [3]
+;        jmp start       ; -0.05us Go back to start
+;    doZero:
+;        set pins, 1 [7] ; Send a zero signal
+;        set pins, 0 [12]
+start:
+    out Y, 1
+    jmp !Y, doZero
+doOne:
+    set pins, 1 [15]
+    set pins, 0 [6]
+    jmp start
+doZero:
+    set pins, 1 [7]
+    set pins, 0 [14]
+.wrap
+
+% c-sdk {
+static inline void pwm_program_init(PIO pio, uint sm, uint offset, uint pin, float div) {
+    // PIO.set <- pin;
+    pio_gpio_init(pio, pin);
+    // PIO.set.pin <- out;
+    pio_sm_set_consecutive_pindirs(pio, sm, pin, 1, 1);
+    pio_sm_config c = pwm_program_get_default_config(offset);
+    // PIOconf.set <- pin;
+    sm_config_set_set_pins(&c, pin, 1);
+    // PIO.clkdiv <- div;
+    pio_sm_set_clkdiv(pio, sm, div);
+    // PIOconf.clkdiv <- div;
+    sm_config_set_clkdiv(&c, div);
+    // PIO.conf <- PIOconf
+    pio_sm_init(pio, sm, offset, &c);
+}
+%}
